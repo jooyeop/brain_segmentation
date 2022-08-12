@@ -19,26 +19,26 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 
 patient = []
-for i in os.listdir('../data/lgg-mri-segmentation/kaggle_3m/'):
-    if i!= 'data.csv' and i!='README.md' :
-        patient.append(i)
+for i in os.listdir('../data/lgg-mri-segmentation/kaggle_3m/'): # patient list
+    if i!= 'data.csv' and i!='README.md' : # data.csv and README.md are not patient list
+        patient.append(i) # 모델 생성
 
 
-def create_dataset(start,end,dataset_type):
-    train_files = []
-    mask_files=[]
+def create_dataset(start,end,dataset_type): # dataset_type : train, val, test
+    train_files = [] # train_files : train 데이터의 파일 리스트
+    mask_files=[] # mask_files : train 데이터의 마스크 파일 리스트
     c=0
-    for i,p in enumerate(patient[start:end]):
-        vals=[]
-        mask_files.append(glob('../data/lgg-mri-segmentation/kaggle_3m/'+p+'/*_mask*'))
-        for m in mask_files[i]:
-            vals.append(np.max(cv2.imread(m)))
-        if max(vals)==0:
+    for i,p in enumerate(patient[start:end]): # patient[start:end] : train 데이터의 파일 리스트
+        vals=[] # vals : train 데이터의 파일 리스트
+        mask_files.append(glob('../data/lgg-mri-segmentation/kaggle_3m/'+p+'/*_mask*')) # glob : 파일 리스트를 반환합니다. glob을 사용하면 파일의 경로를 입력하지 않아도 됩니다.
+        for m in mask_files[i]: # mask_files[i] : train 데이터의 마스크 파일 리스트 
+            vals.append(np.max(cv2.imread(m))) # np.max : 최대값을 반환합니다. 이유는 마스크 파일의 픽셀 값이 0이기 때문입니다.
+        if max(vals)==0: # max : 리스트의 최대값을 반환합니다. 이유는 마스크 파일의 픽셀 값이 0이기 때문입니다.
             print(f'patient { p } has no tumor')
-            c+=1
-    if c==0:
+            c+=1 # C : 삭제된 환자의 수 카운트
+    if c==0: # C가 0이면
         print(f'Each patient in {dataset_type} dataset has brain tumor')
-    mask_files=list(chain.from_iterable(mask_files))
+    mask_files=list(chain.from_iterable(mask_files)) # chain : 리스트의 요소를 연결합니다. 이유는 리스트의 요소들이 다른 리스트들이므로 연결하려면 리스트들을 연결해야합니다.
     for m in mask_files:
         train_files.append(m.replace('_mask',''))
     df = pd.DataFrame(data={"filepath": train_files, 'mask' : mask_files})
@@ -52,7 +52,7 @@ b = int(0.8*a)
 
 
 # 주어진 데이터에서 있는 환자중에서 있는 환자가 없는 환자를 찾아봅니다.
-df_train=create_dataset(0,b,'training')
+df_train=create_dataset(0,b,'training') # 디코더 블록
 df_val=create_dataset(b,a,'validation')
 df_test=create_dataset(a,len(patient),'testing')
 
@@ -230,7 +230,7 @@ def train_model(model, save_name, loss_func):
                                     validation_data = val,
                                     steps_per_epoch = len(df_train)/batch,
                                     validation_steps = len(df_val)/batch,
-                                    epochs = 25,
+                                    epochs = 3,
                                     callbacks = callbacks)
 
 
@@ -244,3 +244,33 @@ def train_model(model, save_name, loss_func):
 
 
 train_model(model, 'unet_wts1.hdf5', dice_loss)
+
+
+# 평가
+
+def eval_model(model_wts,custom_objects):
+    model = load_model(model_wts,custom_objects=custom_objects)
+    test=img_dataset(df_test[['filepath','mask']],'filepath','mask',dict(),32)
+    model.evaluate(test,steps=len(df_test)/32)
+    a=np.random.RandomState(seed=42)
+    indexes=a.randint(1,len(df_test[df_test['res']==1]),10)
+    for i in indexes:
+        img = cv2.imread(df_test[df_test['res']==1].reset_index().loc[i,'filepath'])
+        img = cv2.resize(img ,(256, 256))
+        img = img / 255
+        img = img[np.newaxis, :, :, :]
+        pred=model.predict(img)
+
+        plt.figure(figsize=(12,12))
+        plt.subplot(1,3,1)
+        plt.imshow(np.squeeze(img))
+        plt.title('Original Image')
+        plt.subplot(1,3,2)
+        plt.imshow(np.squeeze(cv2.imread(df_test[df_test['res']==1].reset_index().loc[i,'mask'])))
+        plt.title('Original Mask')
+        plt.subplot(1,3,3)
+        plt.imshow(np.squeeze(pred) > .5)
+        plt.title('Prediction')
+        plt.show()
+
+eval_model('unet_wts1.hdf5',{'dice_loss':dice_loss,'iou':iou})
