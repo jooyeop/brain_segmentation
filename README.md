@@ -10,4 +10,5 @@ https://www.kaggle.com/datasets/mateuszbuda/lgg-mri-segmentation
 https://www.kaggle.com/code/shashank069/brainmri-image-segmentation-attentionunet/notebook
 
 
-진행중인 프로젝트입니다.
+## 프로젝트 목적
+Segmentation 이해도 상승
