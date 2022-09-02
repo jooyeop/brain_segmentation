@@ -1,7 +1,7 @@
 # brain_segmentation
 
 # Video_Object_Detection
-Unwt 모델을 활용한 brain segmentation 프로젝트
+U-net 모델을 활용한 brain segmentation 프로젝트
 
 ## 프로젝트 목적
 사람의 뇌 MRI 데이터를 활용해 Segmentation으로 신경교종 종양 유형의 환자를 구별
