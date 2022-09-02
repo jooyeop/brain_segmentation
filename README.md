@@ -19,8 +19,8 @@ https://www.kaggle.com/datasets/mateuszbuda/lgg-mri-segmentation
 
 ## 연구 및 개발에 필요한 기술 스택
 ### U-Net
-1. Contraction Path : 이미지의 context를 포착
-2. Expansive Path : feature amp을 upsampling 하여 포착한 이미지의 context를 feature map의 context와 결합한다.
+1. Contraction Path(encoding) : 이미지의 context를 포착
+2. Expansive Path(decoding) : feature amp을 upsampling 하여 포착한 이미지의 context를 feature map의 context와 결합한다.
   -> 이는 더욱 정확한 localization을 하는 역할
   
 U-Net은 적은 데이터로 충분한 학습을 하기 위해 Data Augmentation을 사용
