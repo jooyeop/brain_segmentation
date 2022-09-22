@@ -1,7 +1,7 @@
 # brain_segmentation
 
 
-# Video_Object_Detection
+# brain segmentation
 U-net 모델을 활용한 brain segmentation 프로젝트
 
 ## 프로젝트 목적
