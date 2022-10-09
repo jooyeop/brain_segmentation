@@ -1,6 +1,3 @@
-# brain_segmentation
-
-
 # brain segmentation
 U-net 모델을 활용한 brain segmentation 프로젝트
 
