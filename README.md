@@ -5,7 +5,7 @@ U-net 모델을 활용한 brain segmentation 프로젝트
 사람의 뇌 MRI 데이터를 활용해 Segmentation으로 신경교종 종양 유형의 환자를 구별
 
 ## 프로젝트 배경
-Segmentaion 기술에 대한 이해력 상승
+Segmentaion 기술에 대한 이해력 상승 및 모델 이해력 상승
 
 ## 연구 및 개발에 필요한 데이터 셋 소개
 https://www.kaggle.com/datasets/mateuszbuda/lgg-mri-segmentation
