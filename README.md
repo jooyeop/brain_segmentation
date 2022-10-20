@@ -93,3 +93,4 @@ model=Model(inputs=[inputs], outputs=[outputs],name='AttnetionUnet')
 
 참고 코드
 https://www.kaggle.com/code/shashank069/brainmri-image-segmentation-attentionunet/notebook
+
